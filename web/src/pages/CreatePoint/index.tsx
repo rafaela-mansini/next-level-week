@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import  { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from 'react-leaflet';
+import api from '../../services/api';
 
 import Logo from '../../assets/logo.svg';
 
 import './styles.css';
 
+// interface representação do formato que o objeto vai ter
+interface Item{
+    id: number;
+    title: string;
+    image_url: string;
+}
+
 const CreatePoint = () => {
+    // Estado serve para armazenar informações dentro do componente
+    // Estados para um array ou objeto: manualmente informar o tipo de variável que vai ser armazenada dentro dela - para isso fazer uma interface
+    const [ items, setItems ] = useState<Item[]>([]); // informa que o objeto que vai ser salvo dentro do estado é do tipo de Item que foi criado na interface
+
+    // Parameatros: 1 - Qual função quer executar 2 - Quando quer executar;
+    // Se deixar parametro de quando executar vazio, ele vai realizar apenas uma vez;
+    useEffect( () => {
+        api.get('items').then(response => {
+            setItems(response.data);
+        });
+    }, [] );
+
     return(
         <div id="page-create-point">
             <header>
@@ -80,32 +100,15 @@ const CreatePoint = () => {
                         <h2>Itens de coleta</h2>
                         <span>Selecione um ou mais itens abaixo</span>
                     </legend>
-
+                    {/* Sempre que utilizar o map no react é necessário colocar uma propriedade key unico para encontrar e atualizar de forma rapida o item  */}
                     <ul className="items-grid">
-                        <li className="selected">
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
-                        <li>
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
-                        <li className="selected">
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
-                        <li>
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
-                        <li>
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
-                        <li className="selected">
-                            <img src="http://localhost:3333/uploads/lampadas.svg" alt="Lampadas" />
-                            <span>Óleo de Cozinha</span>
-                        </li>
+                        {items.map(item => (
+                            <li key={item.id}>
+                                <img src={item.image_url} alt="{item.title}" />
+                                <span>{item.title}</span>
+                            </li>
+                        ))}
+                        
                     </ul>
                 </fieldset>
 

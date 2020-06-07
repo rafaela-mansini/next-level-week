@@ -54,7 +54,7 @@ class PointsController {
 
         const trx = await knex.transaction(); //variavel trx é um padrão para transaction
         const point = {
-            image: 'default.jpg',
+            image: 'http://192.168.0.7:3333/uploads/default.jpg',
             name, 
             email, 
             whatsapp, 

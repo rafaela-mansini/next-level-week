@@ -18,7 +18,13 @@ class PointsController {
             .distinct()
             .select('points.*');
 
-        return response.json(points);
+        const serializedPoints = points.map(point => {
+            return {
+                ...point, image_url: `http://192.168.0.7:3333/uploads/${point.image}`,
+            }
+        });
+
+        return response.json(serializedPoints);
     }
 
     async show(request: Request, response: Response){
@@ -36,7 +42,11 @@ class PointsController {
             .where('point_items.point_id', id)
             .select('items.title');
 
-        return response.json({ point, items });
+        const serializedPoint = {
+            ...point, image_url: `http://192.168.0.7:3333/uploads/${point.image}`,
+        };
+
+        return response.json({ point: serializedPoint, items });
     }
 
     async create(request: Request, response: Response){
@@ -54,7 +64,7 @@ class PointsController {
 
         const trx = await knex.transaction(); //variavel trx é um padrão para transaction
         const point = {
-            image: 'http://192.168.0.7:3333/uploads/default.jpg',
+            image: request.file.filename,
             name, 
             email, 
             whatsapp, 
@@ -65,7 +75,10 @@ class PointsController {
         }
         const isertedIds = await trx('points').insert( point );
         const point_id = isertedIds[0];
-        const point_items = items.map((item_id: number) => { //mapeia a variável dos items para inserir na tabela
+        const point_items = items
+        .split(',') // quebra nas virgulas para tranformar em array
+        .map((item: string) => Number(item.trim())) // percorre o array e remove os espaços
+        .map((item_id: number) => { //mapeia a variável dos items para inserir na tabela
             return { item_id, point_id };
         });
 

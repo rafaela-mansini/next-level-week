@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
+import config from '../config/configuration';
 
 class PointsController {
 
     async index(request: Request, response: Response){
         const { city, uf, items } = request.query;
+        const { urlService } = config;
 
         const parsedItems = String(items)
             .split(',')
@@ -20,7 +22,7 @@ class PointsController {
 
         const serializedPoints = points.map(point => {
             return {
-                ...point, image_url: `http://192.168.0.7:3333/uploads/${point.image}`,
+                ...point, image_url: `${urlService}/uploads/${point.image}`,
             }
         });
 
@@ -30,7 +32,7 @@ class PointsController {
     async show(request: Request, response: Response){
         // const id = request.params.id; //pode-se utilizar a desestruturação do código
         const { id } = request.params;
-
+        const { urlService } = config;
         const point = await knex('points').where('id', id).first(); //seleciona do banco o primeiro item
         
         if(!point){ //se não existir nenhum point retorna status 400
@@ -43,7 +45,7 @@ class PointsController {
             .select('items.title');
 
         const serializedPoint = {
-            ...point, image_url: `http://192.168.0.7:3333/uploads/${point.image}`,
+            ...point, image_url: `${urlService}/uploads/${point.image}`,
         };
 
         return response.json({ point: serializedPoint, items });

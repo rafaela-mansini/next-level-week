@@ -33,6 +33,7 @@ const Points = () => {
     const route = useRoute();
 
     const routeParams = route.params as Params;
+    console.log('Route params: ', routeParams);
 
     const [ items, setItems ] = useState<Item[]>([]);
     const [ selectedItems, setSelectedItems ] = useState<number[]>([]);

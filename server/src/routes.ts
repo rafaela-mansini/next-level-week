@@ -1,20 +1,24 @@
 import express from 'express';
 import { celebrate, Joi } from 'celebrate';
-import PointsController from './controllers/PointsController';
-import ItemsController from './controllers/ItemsController';
 import multer from 'multer';
 import multerConfig from './config/multer';
+import ItemsController from './controllers/ItemsController';
+import PointsController from './controllers/PointsController';
+import CommentsController from './controllers/CommentsController';
 
 const routes = express.Router(); //desacoplar rotas do arquivo principal do servidor
 const upload = multer(multerConfig); // criando um objeto multer passando as configurações multerConfig
 
 const pointsController = new PointsController();
 const itemsController = new ItemsController();
+const commentsController = new CommentsController();
 
 routes.get('/items', itemsController.index);
 routes.get('/points', pointsController.index);
 routes.get('/points/:id', pointsController.show);
 
+routes.post('/comments', commentsController.create);
+routes.get('/comments/:point_id', commentsController.index);
 
 routes.post(
     '/points',
